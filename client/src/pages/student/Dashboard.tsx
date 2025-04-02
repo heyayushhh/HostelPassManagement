@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import PassDetailsModal from "@/components/shared/PassDetailsModal";
 import ProfilePhotoUpload from "@/components/shared/ProfilePhotoUpload";
-import { School } from "lucide-react";
+import { School, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
@@ -20,30 +20,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-// Time slots for the day
-const TIME_SLOTS = [
-  "9:00 - 10:00",
-  "10:00 - 11:00",
-  "11:00 - 12:00",
-  "12:00 - 13:00",
-  "13:00 - 14:00",
-  "14:00 - 15:00",
-  "15:00 - 16:00",
-  "16:00 - 17:00",
-  "17:00 - 18:00",
-  "18:00 - 19:00",
-  "19:00 - 20:00",
-  "20:00 - 21:00",
+// Time options for selection
+const TIME_OPTIONS = [
+  "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
+  "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00",
+  "20:00", "21:00", "22:00", "23:00"
 ];
 
 export default function StudentDashboard() {
@@ -57,12 +44,14 @@ export default function StudentDashboard() {
   const form = useForm<InsertPass>({
     resolver: zodResolver(insertPassSchema),
     defaultValues: {
-      type: "outdate",
-      date: format(new Date(), "yyyy-MM-dd"),
-      timeSlot: "",
+      outDate: format(new Date(), "yyyy-MM-dd"),
+      outTime: "",
+      inDate: format(new Date(), "yyyy-MM-dd"),
+      inTime: "",
       reason: "",
-      placeToVisit: "",
-      parentContactNo: "",
+      destination: "",
+      contactNumber: user?.phoneNo || "",
+      parentContactNo: user?.parentPhoneNo || "",
     },
   });
 
@@ -85,12 +74,14 @@ export default function StudentDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/passes"] });
       form.reset({
-        type: "outdate",
-        date: format(new Date(), "yyyy-MM-dd"),
-        timeSlot: "",
+        outDate: format(new Date(), "yyyy-MM-dd"),
+        outTime: "",
+        inDate: format(new Date(), "yyyy-MM-dd"),
+        inTime: "",
         reason: "",
-        placeToVisit: "",
-        parentContactNo: "",
+        destination: "",
+        contactNumber: user?.phoneNo || "",
+        parentContactNo: user?.parentPhoneNo || "",
       });
       toast({
         title: "Request Submitted",
@@ -100,17 +91,17 @@ export default function StudentDashboard() {
   });
 
   const onSubmit = (data: InsertPass) => {
-    // Check if student has a pending or approved pass for the same date and time slot
+    // Check if student has a pending or approved pass for the same date and time
     const existingPass = passHistory?.find(pass => 
-      pass.date === data.date && 
-      pass.timeSlot === data.timeSlot && 
+      pass.outDate === data.outDate && 
+      pass.outTime === data.outTime && 
       (pass.status === 'pending' || pass.status === 'approved')
     );
     
     if (existingPass) {
       toast({
         title: "Request Failed",
-        description: "You already have a pass request for this date and time slot. Please select a different time slot.",
+        description: "You already have a pass request for this date and time. Please select a different time.",
         variant: "destructive"
       });
       return;
@@ -188,42 +179,14 @@ export default function StudentDashboard() {
 
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  {/* Out Date and Time */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="type"
+                      name="outDate"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Pass Type</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select pass type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="outdate">
-                                Outdate (Leaving Campus)
-                              </SelectItem>
-                              <SelectItem value="indate">
-                                Indate (Returning to Campus)
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Date</FormLabel>
+                          <FormLabel>Out Date</FormLabel>
                           <FormControl>
                             <Input type="date" {...field} />
                           </FormControl>
@@ -231,41 +194,80 @@ export default function StudentDashboard() {
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name="outTime"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Out Time</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select out time" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {TIME_OPTIONS.map(time => (
+                                <SelectItem key={time} value={time}>
+                                  {time}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="timeSlot"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Time Slot</FormLabel>
-                        <FormControl>
-                          <RadioGroup
+                  {/* In Date and Time */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="inDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>In Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="inTime"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>In Time</FormLabel>
+                          <Select
                             onValueChange={field.onChange}
-                            value={field.value}
-                            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"
+                            defaultValue={field.value}
                           >
-                            {TIME_SLOTS.map((slot) => (
-                              <div key={slot} className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value={slot}
-                                  id={`slot-${slot}`}
-                                  className="peer sr-only"
-                                />
-                                <Label
-                                  htmlFor={`slot-${slot}`}
-                                  className="flex py-2 px-3 w-full text-center text-sm border border-gray-300 rounded-md cursor-pointer peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-white hover:bg-gray-100 peer-data-[state=checked]:hover:bg-primary transition-colors"
-                                >
-                                  {slot}
-                                </Label>
-                              </div>
-                            ))}
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select in time" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {TIME_OPTIONS.map(time => (
+                                <SelectItem key={time} value={time}>
+                                  {time}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -287,10 +289,10 @@ export default function StudentDashboard() {
 
                   <FormField
                     control={form.control}
-                    name="placeToVisit"
+                    name="destination"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Place to Visit</FormLabel>
+                        <FormLabel>Destination</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Where are you going?"
@@ -302,23 +304,43 @@ export default function StudentDashboard() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="parentContactNo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Parent's Phone Number</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your parent's contact number"
-                            type="tel"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="contactNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Your Contact Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Your contact number"
+                              type="tel"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="parentContactNo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Parent's Phone Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter your parent's contact number"
+                              type="tel"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <Button
                     type="submit"
@@ -375,19 +397,19 @@ export default function StudentDashboard() {
                           scope="col"
                           className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
-                          Date
+                          Out Date
                         </th>
                         <th
                           scope="col"
                           className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
-                          Time
+                          Out Time
                         </th>
                         <th
                           scope="col"
                           className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
-                          Type
+                          In Date
                         </th>
                         <th
                           scope="col"
@@ -407,13 +429,13 @@ export default function StudentDashboard() {
                       {filteredPasses.map((pass) => (
                         <tr key={pass.id}>
                           <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">
-                            {pass.date}
+                            {pass.outDate}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">
-                            {pass.timeSlot}
+                            {pass.outTime}
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 capitalize">
-                            {pass.type}
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">
+                            {pass.inDate}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap">
                             <Badge

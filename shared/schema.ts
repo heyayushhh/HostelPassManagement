@@ -21,13 +21,15 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
-  createdAt: true,
-});
-
-// Pass Types Enum
-export const passTypeEnum = pgEnum('pass_type', ['outdate', 'indate']);
+export const insertUserSchema = createInsertSchema(users)
+  .omit({
+    id: true,
+    createdAt: true,
+  })
+  .extend({
+    phoneNo: z.string().min(10, "Phone number must be at least 10 digits").max(10, "Phone number must be exactly 10 digits"),
+    parentPhoneNo: z.string().min(10, "Parent phone number must be at least 10 digits").max(10, "Parent phone number must be exactly 10 digits")
+  });
 
 // Pass Status Enum
 export const passStatusEnum = pgEnum('pass_status', ['pending', 'approved', 'rejected']);
@@ -36,12 +38,14 @@ export const passStatusEnum = pgEnum('pass_status', ['pending', 'approved', 'rej
 export const passes = pgTable("passes", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  type: passTypeEnum("type").notNull(),
-  date: text("date").notNull(),
-  timeSlot: text("time_slot").notNull(),
+  outDate: text("out_date").notNull(),
+  outTime: text("out_time").notNull(),
+  inDate: text("in_date").notNull(),
+  inTime: text("in_time").notNull(),
   reason: text("reason").notNull(),
-  placeToVisit: text("place_to_visit").notNull(),
-  parentContactNo: text("parent_contact_no"),
+  destination: text("destination").notNull(),
+  contactNumber: text("contact_number").notNull(),
+  parentContactNo: text("parent_contact_no").notNull(),
   status: passStatusEnum("status").notNull().default('pending'),
   wardenId: integer("warden_id").references(() => users.id),
   wardenNote: text("warden_note"),
@@ -60,7 +64,8 @@ export const insertPassSchema = createInsertSchema(passes)
     updatedAt: true,
   })
   .extend({
-    parentContactNo: z.string().min(10, "Parent contact number is required")
+    contactNumber: z.string().min(10, "Contact number must be at least 10 digits").max(10, "Contact number must be exactly 10 digits"),
+    parentContactNo: z.string().min(10, "Parent contact number must be at least 10 digits").max(10, "Parent contact number must be exactly 10 digits")
   });
 
 // Pass Review Schema for approval/rejection

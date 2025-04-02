@@ -77,30 +77,34 @@ export default function PassDetailsModal({ pass, isOpen, onClose }: PassDetailsM
           <div className="bg-gray-50 p-3 rounded-md">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className="text-xs text-gray-500">Pass Type</p>
-                <p className="text-sm font-medium capitalize">{pass.type}</p>
-              </div>
-              <div>
                 <p className="text-xs text-gray-500">Status</p>
                 <p className={`text-sm font-medium capitalize ${statusColor}`}>
                   {pass.status}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-500">Date</p>
-                <p className="text-sm font-medium">{formatDate(pass.date)}</p>
+                <p className="text-xs text-gray-500">Out Date</p>
+                <p className="text-sm font-medium">{formatDate(pass.outDate)}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500">Time</p>
-                <p className="text-sm font-medium">{pass.timeSlot}</p>
+                <p className="text-xs text-gray-500">Out Time</p>
+                <p className="text-sm font-medium">{pass.outTime}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500">Place to Visit</p>
-                <p className="text-sm font-medium">{pass.placeToVisit}</p>
+                <p className="text-xs text-gray-500">In Date</p>
+                <p className="text-sm font-medium">{formatDate(pass.inDate)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">In Time</p>
+                <p className="text-sm font-medium">{pass.inTime}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Destination</p>
+                <p className="text-sm font-medium">{pass.destination}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Student Contact</p>
-                <p className="text-sm font-medium">{student?.phoneNo}</p>
+                <p className="text-sm font-medium">{pass.contactNumber}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Parent Contact</p>

@@ -1,10 +1,19 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { testConnection } from "./db";
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { db } from "./db";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Attempt to connect to the database
+testConnection().catch(error => {
+  console.error('Database initialization failed:', error);
+  process.exit(1);
+});
 
 app.use((req, res, next) => {
   const start = Date.now();

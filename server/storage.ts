@@ -4,6 +4,8 @@ import {
   notifications, Notification, InsertNotification,
   passStatusEnum
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, desc } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -25,113 +27,120 @@ export interface IStorage {
   markNotificationAsRead(notificationId: number): Promise<Notification>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private passes: Map<number, Pass>;
-  private notifications: Map<number, Notification>;
-  
-  private userCurrentId: number;
-  private passCurrentId: number;
-  private notificationCurrentId: number;
-
+export class DatabaseStorage implements IStorage {
   constructor() {
-    this.users = new Map();
-    this.passes = new Map();
-    this.notifications = new Map();
-    
-    this.userCurrentId = 1;
-    this.passCurrentId = 1;
-    this.notificationCurrentId = 1;
-    
-    // Create default warden and guard accounts
-    this.createUser({
-      username: 'warden',
-      password: 'warden123',
-      role: 'warden',
-      name: 'Dr. Smith (Warden)',
-      roomNo: '',
-      course: '',
-      batch: '',
-      phoneNo: '',
-      parentPhoneNo: ''
-    });
-    
-    this.createUser({
-      username: 'guard',
-      password: 'guard123',
-      role: 'guard',
-      name: 'Security Officer',
-      roomNo: '',
-      course: '',
-      batch: '',
-      phoneNo: '',
-      parentPhoneNo: ''
-    });
+    // Create initial warden and guard users if they don't exist
+    this.initializeDefaultUsers();
+  }
+
+  private async initializeDefaultUsers() {
+    try {
+      // Check if warden exists
+      const wardenExists = await this.getUserByUsername('warden');
+      if (!wardenExists) {
+        await this.createUser({
+          username: 'warden',
+          password: 'warden123',
+          role: 'warden',
+          name: 'Dr. Smith (Warden)',
+          roomNo: '',
+          course: '',
+          batch: '',
+          phoneNo: '',
+          parentPhoneNo: ''
+        });
+        console.log('Created default warden account');
+      }
+
+      // Check if guard exists
+      const guardExists = await this.getUserByUsername('guard');
+      if (!guardExists) {
+        await this.createUser({
+          username: 'guard',
+          password: 'guard123',
+          role: 'guard',
+          name: 'Security Officer',
+          roomNo: '',
+          course: '',
+          batch: '',
+          phoneNo: '',
+          parentPhoneNo: ''
+        });
+        console.log('Created default guard account');
+      }
+    } catch (error) {
+      console.error('Error initializing default users:', error);
+    }
   }
 
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userCurrentId++;
-    const createdAt = new Date();
-    const user: User = { ...insertUser, id, createdAt };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
   
   // Pass methods
   async createPass(userId: number, insertPass: InsertPass): Promise<Pass> {
-    const id = this.passCurrentId++;
-    const createdAt = new Date();
-    const updatedAt = new Date();
-    const pass: Pass = {
-      ...insertPass,
-      id,
-      userId,
-      status: 'pending',
-      wardenId: null,
-      wardenNote: null,
-      createdAt,
-      updatedAt
-    };
-    this.passes.set(id, pass);
+    const now = new Date();
+    const [pass] = await db
+      .insert(passes)
+      .values({
+        ...insertPass,
+        userId,
+        status: 'pending',
+        wardenId: null,
+        wardenNote: null,
+        createdAt: now,
+        updatedAt: now
+      })
+      .returning();
     return pass;
   }
   
   async getPassById(passId: number): Promise<Pass | undefined> {
-    return this.passes.get(passId);
+    const [pass] = await db.select().from(passes).where(eq(passes.id, passId));
+    return pass;
   }
   
   async getPassesByUserId(userId: number): Promise<Pass[]> {
-    return Array.from(this.passes.values()).filter(
-      (pass) => pass.userId === userId
-    ).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()); // Newest first
+    return await db
+      .select()
+      .from(passes)
+      .where(eq(passes.userId, userId))
+      .orderBy(desc(passes.createdAt)); // Newest first
   }
   
   async getPassesByStatus(status: string): Promise<Pass[]> {
-    return Array.from(this.passes.values()).filter(
-      (pass) => pass.status === status
-    ).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()); // Newest first
+    // Convert string to enum value
+    const statusValue = status as typeof passStatusEnum.enumValues[number];
+    return await db
+      .select()
+      .from(passes)
+      .where(eq(passes.status, statusValue))
+      .orderBy(desc(passes.createdAt)); // Newest first
   }
   
   async getPassesByStatusAndDate(status: string, date: string): Promise<Pass[]> {
-    return Array.from(this.passes.values()).filter(
-      (pass) => pass.status === status && pass.date === date
-    ).sort((a, b) => {
-      // Compare time slots (assuming format like "9:00 - 10:00")
-      const aStartTime = pass.timeSlot.split(' - ')[0];
-      const bStartTime = pass.timeSlot.split(' - ')[0];
-      return aStartTime.localeCompare(bStartTime);
-    });
+    // Convert string to enum value
+    const statusValue = status as typeof passStatusEnum.enumValues[number];
+    return await db
+      .select()
+      .from(passes)
+      .where(and(eq(passes.status, statusValue), eq(passes.date, date)))
+      .orderBy(passes.timeSlot); // Order by time slot
   }
   
   async updatePassStatus(
@@ -140,59 +149,58 @@ export class MemStorage implements IStorage {
     wardenId: number,
     wardenNote?: string
   ): Promise<Pass> {
-    const pass = this.passes.get(passId);
+    const [updatedPass] = await db
+      .update(passes)
+      .set({
+        status: status as typeof passStatusEnum.enumValues[number],
+        wardenId,
+        wardenNote: wardenNote || null,
+        updatedAt: new Date()
+      })
+      .where(eq(passes.id, passId))
+      .returning();
     
-    if (!pass) {
+    if (!updatedPass) {
       throw new Error(`Pass with ID ${passId} not found`);
     }
     
-    const updatedPass: Pass = {
-      ...pass,
-      status: status as typeof passStatusEnum.enumValues[number],
-      wardenId,
-      wardenNote: wardenNote || null,
-      updatedAt: new Date()
-    };
-    
-    this.passes.set(passId, updatedPass);
     return updatedPass;
   }
   
   // Notification methods
   async createNotification(insertNotification: InsertNotification): Promise<Notification> {
-    const id = this.notificationCurrentId++;
-    const createdAt = new Date();
-    const notification: Notification = {
-      ...insertNotification,
-      id,
-      isRead: false,
-      createdAt
-    };
-    this.notifications.set(id, notification);
+    const [notification] = await db
+      .insert(notifications)
+      .values({
+        ...insertNotification,
+        isRead: false,
+        createdAt: new Date()
+      })
+      .returning();
     return notification;
   }
   
   async getNotificationsByUserId(userId: number): Promise<Notification[]> {
-    return Array.from(this.notifications.values())
-      .filter((notification) => notification.userId === userId)
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()); // Newest first
+    return await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt)); // Newest first
   }
   
   async markNotificationAsRead(notificationId: number): Promise<Notification> {
-    const notification = this.notifications.get(notificationId);
+    const [updatedNotification] = await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.id, notificationId))
+      .returning();
     
-    if (!notification) {
+    if (!updatedNotification) {
       throw new Error(`Notification with ID ${notificationId} not found`);
     }
     
-    const updatedNotification: Notification = {
-      ...notification,
-      isRead: true
-    };
-    
-    this.notifications.set(notificationId, updatedNotification);
     return updatedNotification;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

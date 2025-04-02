@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { login, logout, getUser, register } from "@/lib/auth";
 import { User, LoginData, InsertUser } from "@shared/schema";
@@ -25,26 +25,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { isLoading, data: userData } = useQuery({
     queryKey: ["/api/auth/user"],
     queryFn: getUser,
-    onSuccess: (data) => {
-      if (data && data.user) {
-        setUser(data.user);
-        // Redirect based on user role after getting user data
-        if (data.user.role === 'student') {
-          navigate('/student/dashboard');
-        } else if (data.user.role === 'warden') {
-          navigate('/warden/dashboard');
-        } else if (data.user.role === 'guard') {
-          navigate('/guard/dashboard');
-        }
-      }
-    },
-    onError: () => {
-      setUser(null);
-    }
   });
 
   // Initialize user from query data
-  React.useEffect(() => {
+  useEffect(() => {
     if (userData && userData.user) {
       setUser(userData.user);
     }

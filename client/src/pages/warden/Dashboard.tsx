@@ -114,7 +114,7 @@ export default function WardenDashboard() {
     
     return passes.filter((pass) => 
       pass.student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      pass.student.roomNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (pass.student.roomNo ? pass.student.roomNo.toLowerCase().includes(searchQuery.toLowerCase()) : false) ||
       pass.reason.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
@@ -184,7 +184,7 @@ export default function WardenDashboard() {
                             <div>
                               <h3 className="text-md font-medium">{pass.student.name}</h3>
                               <div className="flex space-x-4 text-gray-600 text-sm">
-                                <span>Room {pass.student.roomNo}</span>
+                                <span>Room {pass.student.roomNo || 'N/A'}</span>
                                 <span>{pass.student.course} {pass.student.batch}</span>
                               </div>
                             </div>
@@ -268,6 +268,9 @@ export default function WardenDashboard() {
                           Details
                         </th>
                         <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
@@ -286,7 +289,7 @@ export default function WardenDashboard() {
                               </div>
                               <div className="ml-3">
                                 <div className="text-sm font-medium text-gray-900">{pass.student.name}</div>
-                                <div className="text-xs text-gray-500">Room {pass.student.roomNo}</div>
+                                <div className="text-xs text-gray-500">Room {pass.student.roomNo || "N/A"}</div>
                               </div>
                             </div>
                           </td>
@@ -297,6 +300,11 @@ export default function WardenDashboard() {
                           <td className="px-4 py-3 whitespace-nowrap">
                             <div className="text-sm text-gray-900">{pass.placeToVisit}</div>
                             <div className="text-xs text-gray-500">{pass.reason}</div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <span className="px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
+                              Approved
+                            </span>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap">
                             <Button
@@ -345,6 +353,9 @@ export default function WardenDashboard() {
                           Reason for Rejection
                         </th>
                         <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
@@ -363,7 +374,7 @@ export default function WardenDashboard() {
                               </div>
                               <div className="ml-3">
                                 <div className="text-sm font-medium text-gray-900">{pass.student.name}</div>
-                                <div className="text-xs text-gray-500">Room {pass.student.roomNo}</div>
+                                <div className="text-xs text-gray-500">Room {pass.student.roomNo || "N/A"}</div>
                               </div>
                             </div>
                           </td>
@@ -373,6 +384,11 @@ export default function WardenDashboard() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="text-sm text-gray-900">{pass.wardenNote || "No reason provided"}</div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <span className="px-3 py-1 text-sm font-medium rounded-full bg-red-100 text-red-800">
+                              Rejected
+                            </span>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap">
                             <Button

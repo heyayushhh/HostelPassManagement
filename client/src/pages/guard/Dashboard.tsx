@@ -57,7 +57,7 @@ export default function GuardDashboard() {
     ? approvedPasses.filter(
         (pass) =>
           pass.student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          pass.student.roomNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (pass.student.roomNo ? pass.student.roomNo.toLowerCase().includes(searchQuery.toLowerCase()) : false) ||
           pass.placeToVisit.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : [];
@@ -199,7 +199,7 @@ export default function GuardDashboard() {
                         <div className="text-xs text-gray-500 capitalize">{pass.type}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{pass.student.roomNo}</div>
+                        <div className="text-sm text-gray-900">{pass.student.roomNo || 'N/A'}</div>
                         <div className="text-xs text-gray-500">{pass.student.course} {pass.student.batch}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
@@ -207,8 +207,8 @@ export default function GuardDashboard() {
                         <div className="text-xs text-gray-500 truncate max-w-[150px]">{pass.reason}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <Badge className="bg-green-100 text-green-800">
-                          Active
+                        <Badge className="px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
+                          {pass.status.charAt(0).toUpperCase() + pass.status.slice(1)}
                         </Badge>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm">

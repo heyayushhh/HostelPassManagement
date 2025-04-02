@@ -383,7 +383,7 @@ export default function StudentDashboard() {
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap">
                             <Badge
-                              className={`${
+                              className={`px-3 py-1 text-sm font-medium rounded-full ${
                                 pass.status === "approved"
                                   ? "bg-green-100 text-green-800"
                                   : pass.status === "rejected"

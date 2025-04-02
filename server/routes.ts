@@ -14,6 +14,9 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
+import { UploadedFile } from "express-fileupload";
+import path from "path";
+import fs from "fs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -305,6 +308,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ pass: updatedPass });
     } catch (error) {
       res.status(400).json({ message: "Invalid input data" });
+    }
+  });
+  
+  // Profile photo upload route
+  app.post("/api/users/profile-photo", isAuthenticated, async (req, res) => {
+    try {
+      if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).json({ message: "No file was uploaded" });
+      }
+      
+      const user = req.user as any;
+      const profilePhoto = req.files.profilePhoto as UploadedFile;
+      
+      // Validate file size (10MB max)
+      if (profilePhoto.size > 10 * 1024 * 1024) {
+        return res.status(400).json({ message: "File size exceeds 10MB limit" });
+      }
+
+      // Validate file type
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+      if (!allowedTypes.includes(profilePhoto.mimetype)) {
+        return res.status(400).json({ message: "Only image files are allowed" });
+      }
+      
+      // Create a unique filename
+      const filename = `${user.id}-${Date.now()}${path.extname(profilePhoto.name)}`;
+      const uploadPath = path.join(__dirname, '../uploads', filename);
+      
+      // Move the file to the uploads directory
+      await profilePhoto.mv(uploadPath);
+      
+      // Update user's profile photo in the database
+      const updatedUser = await storage.updateUserProfilePhoto(user.id, `/uploads/${filename}`);
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = updatedUser;
+      
+      res.json({ user: userWithoutPassword });
+    } catch (error) {
+      res.status(500).json({ message: "Error uploading profile photo" });
     }
   });
   

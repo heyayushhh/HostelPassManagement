@@ -12,6 +12,7 @@ import { Pass, User } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function GuardDashboard() {
   const { user } = useAuth();
@@ -113,7 +114,22 @@ export default function GuardDashboard() {
             <div className="mt-4">
               {verifiedPass ? (
                 <div className="p-3 bg-green-50 border border-green-200 rounded-md flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-2" />
+                  <div className="flex items-center gap-2 mr-2">
+                    <Avatar className="h-8 w-8">
+                      {verifiedPass.student.profilePhoto ? (
+                        <AvatarImage src={verifiedPass.student.profilePhoto} alt={verifiedPass.student.name} />
+                      ) : (
+                        <AvatarFallback className="bg-primary-light text-white text-xs font-medium">
+                          {verifiedPass.student.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  </div>
                   <span className="text-green-800">
                     <strong>{verifiedPass.student.name}</strong> has a valid approved pass for {verifiedPass.date} ({verifiedPass.timeSlot})
                   </span>
@@ -181,13 +197,19 @@ export default function GuardDashboard() {
                     <tr key={pass.id}>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-8 w-8 bg-primary-light rounded-full flex items-center justify-center text-white text-xs">
-                            {pass.student.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")
-                              .toUpperCase()}
-                          </div>
+                          <Avatar className="h-8 w-8">
+                            {pass.student.profilePhoto ? (
+                              <AvatarImage src={pass.student.profilePhoto} alt={pass.student.name} />
+                            ) : (
+                              <AvatarFallback className="bg-primary-light text-white text-xs font-medium">
+                                {pass.student.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")
+                                  .toUpperCase()}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
                           <div className="ml-3">
                             <div className="text-sm font-medium text-gray-900">{pass.student.name}</div>
                             <div className="text-xs text-gray-500">{pass.student.phoneNo}</div>

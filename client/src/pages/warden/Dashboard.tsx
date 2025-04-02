@@ -13,6 +13,7 @@ import { Pass, PassReview, User as UserType } from "@shared/schema";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Search, CheckCircle, XCircle } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function WardenDashboard() {
   const { user } = useAuth();
@@ -174,13 +175,19 @@ export default function WardenDashboard() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
                         <div className="mb-2 sm:mb-0">
                           <div className="flex items-center">
-                            <div className="bg-primary-light rounded-full h-10 w-10 flex items-center justify-center text-white text-sm font-medium mr-3">
-                              {pass.student.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")
-                                .toUpperCase()}
-                            </div>
+                            <Avatar className="h-10 w-10 mr-3">
+                              {pass.student.profilePhoto ? (
+                                <AvatarImage src={pass.student.profilePhoto} alt={pass.student.name} />
+                              ) : (
+                                <AvatarFallback className="bg-primary-light text-white text-sm font-medium">
+                                  {pass.student.name
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")
+                                    .toUpperCase()}
+                                </AvatarFallback>
+                              )}
+                            </Avatar>
                             <div>
                               <h3 className="text-md font-medium">{pass.student.name}</h3>
                               <div className="flex space-x-4 text-gray-600 text-sm">
@@ -280,13 +287,19 @@ export default function WardenDashboard() {
                         <tr key={pass.id}>
                           <td className="px-4 py-3 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className="flex-shrink-0 h-8 w-8 bg-primary-light rounded-full flex items-center justify-center text-white text-xs">
-                                {pass.student.name
-                                  .split(" ")
-                                  .map((n) => n[0])
-                                  .join("")
-                                  .toUpperCase()}
-                              </div>
+                              <Avatar className="h-8 w-8">
+                                {pass.student.profilePhoto ? (
+                                  <AvatarImage src={pass.student.profilePhoto} alt={pass.student.name} />
+                                ) : (
+                                  <AvatarFallback className="bg-primary-light text-white text-xs font-medium">
+                                    {pass.student.name
+                                      .split(" ")
+                                      .map((n) => n[0])
+                                      .join("")
+                                      .toUpperCase()}
+                                  </AvatarFallback>
+                                )}
+                              </Avatar>
                               <div className="ml-3">
                                 <div className="text-sm font-medium text-gray-900">{pass.student.name}</div>
                                 <div className="text-xs text-gray-500">Room {pass.student.roomNo || "N/A"}</div>
@@ -365,13 +378,19 @@ export default function WardenDashboard() {
                         <tr key={pass.id}>
                           <td className="px-4 py-3 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className="flex-shrink-0 h-8 w-8 bg-primary-light rounded-full flex items-center justify-center text-white text-xs">
-                                {pass.student.name
-                                  .split(" ")
-                                  .map((n) => n[0])
-                                  .join("")
-                                  .toUpperCase()}
-                              </div>
+                              <Avatar className="h-8 w-8">
+                                {pass.student.profilePhoto ? (
+                                  <AvatarImage src={pass.student.profilePhoto} alt={pass.student.name} />
+                                ) : (
+                                  <AvatarFallback className="bg-primary-light text-white text-xs font-medium">
+                                    {pass.student.name
+                                      .split(" ")
+                                      .map((n) => n[0])
+                                      .join("")
+                                      .toUpperCase()}
+                                  </AvatarFallback>
+                                )}
+                              </Avatar>
                               <div className="ml-3">
                                 <div className="text-sm font-medium text-gray-900">{pass.student.name}</div>
                                 <div className="text-xs text-gray-500">Room {pass.student.roomNo || "N/A"}</div>

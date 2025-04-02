@@ -12,6 +12,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserProfilePhoto(userId: number, photoPath: string): Promise<User>;
   
   // Pass methods
   createPass(userId: number, pass: InsertPass): Promise<Pass>;
@@ -90,6 +91,20 @@ export class DatabaseStorage implements IStorage {
       .values(insertUser)
       .returning();
     return user;
+  }
+
+  async updateUserProfilePhoto(userId: number, photoPath: string): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ profilePhoto: photoPath })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    if (!updatedUser) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    return updatedUser;
   }
   
   // Pass methods

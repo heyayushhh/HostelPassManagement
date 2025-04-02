@@ -4,10 +4,29 @@ import { setupVite, serveStatic, log } from "./vite";
 import { testConnection } from "./db";
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { db } from "./db";
+import fileUpload from 'express-fileupload';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// Create path references compatible with ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(fileUpload({
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
+  createParentPath: true, // Create the directory automatically
+}));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Attempt to connect to the database
 testConnection().catch(error => {

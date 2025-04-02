@@ -5,6 +5,8 @@ import { Bell, ChevronDown, LogOut } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Notification } from "@shared/schema";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -62,9 +64,15 @@ export default function DashboardLayout({ children, title, icon }: DashboardLayo
             <div className="ml-4 relative">
               <div className="flex items-center space-x-3">
                 <div className="flex items-center">
-                  <div className="bg-primary-dark rounded-full h-8 w-8 flex items-center justify-center text-white text-sm font-medium">
-                    {user?.name?.split(" ").map(n => n[0]).join("").toUpperCase()}
-                  </div>
+                  <Avatar className="h-9 w-9 border-2 border-white/50">
+                    {user?.profilePhoto ? (
+                      <AvatarImage src={user.profilePhoto} alt={user?.name || ''} />
+                    ) : (
+                      <AvatarFallback className="bg-primary-dark text-white text-sm font-medium">
+                        {user?.name?.split(" ").map(n => n[0]).join("").toUpperCase()}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
                   <div className="ml-2">
                     <span className="text-sm font-medium">{user?.name}</span>
                     <p className="text-xs text-white/80">{user?.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : ''}</p>

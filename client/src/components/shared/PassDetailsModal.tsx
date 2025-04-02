@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { X, Printer } from "lucide-react";
 import { Pass, User } from "@shared/schema";
 import { format } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface PassDetailsModalProps {
   pass: Pass & { student?: User; warden?: User };
@@ -55,9 +56,15 @@ export default function PassDetailsModal({ pass, isOpen, onClose }: PassDetailsM
         <div className="space-y-4">
           {student && (
             <div className="flex items-center space-x-3">
-              <div className="bg-primary-light rounded-full h-12 w-12 flex items-center justify-center text-white text-md font-medium">
-                {getInitials(student.name)}
-              </div>
+              <Avatar className="h-12 w-12">
+                {student.profilePhoto ? (
+                  <AvatarImage src={student.profilePhoto} alt={student.name} />
+                ) : (
+                  <AvatarFallback className="bg-primary-light text-white text-lg font-medium">
+                    {getInitials(student.name)}
+                  </AvatarFallback>
+                )}
+              </Avatar>
               <div>
                 <h4 className="text-md font-medium">{student.name}</h4>
                 <p className="text-sm text-gray-600">
@@ -118,7 +125,7 @@ export default function PassDetailsModal({ pass, isOpen, onClose }: PassDetailsM
                   <span className="font-medium">{warden.name}</span>
                 </p>
                 <p className="text-sm text-gray-600">
-                  {format(new Date(pass.updatedAt), "MMMM d, yyyy • h:mm a")}
+                  {pass.updatedAt ? formatDate(pass.updatedAt.toString()) + " • " + format(new Date(pass.updatedAt), "h:mm a") : ""}
                 </p>
               </div>
             </div>

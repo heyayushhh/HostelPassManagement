@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import PassDetailsModal from "@/components/shared/PassDetailsModal";
+import ProfilePhotoUpload from "@/components/shared/ProfilePhotoUpload";
 import { School } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Time slots for the day
 const TIME_SLOTS = [
@@ -133,18 +135,14 @@ export default function StudentDashboard() {
         <div className="lg:col-span-1">
           <Card>
             <CardContent className="p-6">
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="bg-primary-light rounded-full h-16 w-16 flex items-center justify-center text-white text-xl font-medium">
-                  {user?.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()}
-                </div>
-                <div>
-                  <h2 className="text-lg font-medium">{user?.name}</h2>
-                  <p className="text-gray-600 text-sm">@{user?.username}</p>
-                </div>
+              {/* Profile Photo Upload Component */}
+              <div className="flex flex-col items-center mb-6">
+                {user && <ProfilePhotoUpload user={user} />}
+              </div>
+              
+              <div className="flex flex-col items-center space-y-2 mb-4">
+                <h2 className="text-lg font-medium">{user?.name}</h2>
+                <p className="text-gray-600 text-sm">@{user?.username}</p>
               </div>
 
               <div className="border-t border-gray-200 pt-4">

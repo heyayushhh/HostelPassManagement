@@ -96,6 +96,22 @@ export default function StudentDashboard() {
   });
 
   const onSubmit = (data: InsertPass) => {
+    // Check if student has a pending or approved pass for the same date and time slot
+    const existingPass = passHistory?.find(pass => 
+      pass.date === data.date && 
+      pass.timeSlot === data.timeSlot && 
+      (pass.status === 'pending' || pass.status === 'approved')
+    );
+    
+    if (existingPass) {
+      toast({
+        title: "Request Failed",
+        description: "You already have a pass request for this date and time slot. Please select a different time slot.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     createPassMutation.mutate(data);
   };
 

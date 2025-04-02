@@ -9,8 +9,11 @@ import {
   insertUserSchema, 
   loginSchema, 
   insertPassSchema, 
-  passReviewSchema
+  passReviewSchema,
+  users as usersTable
 } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -171,12 +174,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const passData = insertPassSchema.parse(req.body);
       const user = req.user as any;
       
+      // Check if the student already has a pending or approved pass for the same date and time slot
+      const userPasses = await storage.getPassesByUserId(user.id);
+      const existingPass = userPasses.find(pass => 
+        pass.date === passData.date && 
+        pass.timeSlot === passData.timeSlot && 
+        (pass.status === 'pending' || pass.status === 'approved')
+      );
+      
+      if (existingPass) {
+        return res.status(400).json({ 
+          message: "You already have a pass request for this date and time slot. Please select a different time slot." 
+        });
+      }
+      
       const pass = await storage.createPass(user.id, passData);
       
-      // Create notification for wardens
-      const wardens = Array.from(storage.getUser).filter((user: any) => user.role === "warden");
+      // Create notification for wardens - get users with warden role
+      // We need this async method to get all wardens since we don't have a direct function to get all wardens
+      const wardenUsers = await db.select().from(usersTable).where(eq(usersTable.role, 'warden'));
       
-      for (const warden of wardens) {
+      for (const warden of wardenUsers) {
         await storage.createNotification({
           userId: warden.id,
           message: `New gate pass request from ${user.name}`,

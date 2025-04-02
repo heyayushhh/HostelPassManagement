@@ -180,8 +180,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if the student already has a pending or approved pass for the same date and time slot
       const userPasses = await storage.getPassesByUserId(user.id);
       const existingPass = userPasses.find(pass => 
-        pass.date === passData.date && 
-        pass.timeSlot === passData.timeSlot && 
+        pass.outDate === passData.outDate && 
+        pass.outTime === passData.outTime && 
         (pass.status === 'pending' || pass.status === 'approved')
       );
       
@@ -301,7 +301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const status = reviewData.status === "approved" ? "approved" : "rejected";
         await storage.createNotification({
           userId: student.id,
-          message: `Your gate pass request for ${pass.date} (${pass.timeSlot}) has been ${status}`,
+          message: `Your gate pass request for ${pass.outDate} (${pass.outTime}) has been ${status}`,
         });
       }
       
@@ -319,7 +319,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Make sure the uploads directory exists
-      const uploadsDir = path.join(__dirname, '../uploads');
+      // Use URL-based path resolution for ESM compatibility
+      const uploadsDir = path.resolve('./uploads');
       if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });
       }

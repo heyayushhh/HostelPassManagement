@@ -41,6 +41,7 @@ export const passes = pgTable("passes", {
   timeSlot: text("time_slot").notNull(),
   reason: text("reason").notNull(),
   placeToVisit: text("place_to_visit").notNull(),
+  parentContactNo: text("parent_contact_no"),
   status: passStatusEnum("status").notNull().default('pending'),
   wardenId: integer("warden_id").references(() => users.id),
   wardenNote: text("warden_note"),
@@ -48,15 +49,19 @@ export const passes = pgTable("passes", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertPassSchema = createInsertSchema(passes).omit({
-  id: true,
-  userId: true,
-  status: true,
-  wardenId: true,
-  wardenNote: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertPassSchema = createInsertSchema(passes)
+  .omit({
+    id: true,
+    userId: true,
+    status: true,
+    wardenId: true,
+    wardenNote: true,
+    createdAt: true,
+    updatedAt: true,
+  })
+  .extend({
+    parentContactNo: z.string().min(10, "Parent contact number is required")
+  });
 
 // Pass Review Schema for approval/rejection
 export const passReviewSchema = z.object({

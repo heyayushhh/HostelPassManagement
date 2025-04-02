@@ -99,8 +99,12 @@ export default function PassDetailsModal({ pass, isOpen, onClose }: PassDetailsM
                 <p className="text-sm font-medium">{pass.placeToVisit}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500">Contact</p>
+                <p className="text-xs text-gray-500">Student Contact</p>
                 <p className="text-sm font-medium">{student?.phoneNo}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Parent Contact</p>
+                <p className="text-sm font-medium">{pass.parentContactNo || "Not provided"}</p>
               </div>
             </div>
             <div className="mt-3">

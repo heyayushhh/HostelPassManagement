@@ -62,6 +62,7 @@ export default function StudentDashboard() {
       timeSlot: "",
       reason: "",
       placeToVisit: "",
+      parentContactNo: "",
     },
   });
 
@@ -89,6 +90,7 @@ export default function StudentDashboard() {
         timeSlot: "",
         reason: "",
         placeToVisit: "",
+        parentContactNo: "",
       });
       toast({
         title: "Request Submitted",
@@ -292,6 +294,24 @@ export default function StudentDashboard() {
                         <FormControl>
                           <Input
                             placeholder="Where are you going?"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="parentContactNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Parent's Phone Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your parent's contact number"
+                            type="tel"
                             {...field}
                           />
                         </FormControl>

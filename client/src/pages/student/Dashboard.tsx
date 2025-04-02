@@ -211,11 +211,21 @@ export default function StudentDashboard() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {TIME_OPTIONS.map(time => (
-                                <SelectItem key={time} value={time}>
-                                  {time}
-                                </SelectItem>
-                              ))}
+                              <SelectItem value="6:00 - 7:00 AM">6:00 - 7:00 AM</SelectItem>
+                              <SelectItem value="7:00 - 8:00 AM">7:00 - 8:00 AM</SelectItem>
+                              <SelectItem value="8:00 - 9:00 AM">8:00 - 9:00 AM</SelectItem>
+                              <SelectItem value="9:00 - 10:00 AM">9:00 - 10:00 AM</SelectItem>
+                              <SelectItem value="10:00 - 11:00 AM">10:00 - 11:00 AM</SelectItem>
+                              <SelectItem value="11:00 - 12:00 PM">11:00 - 12:00 PM</SelectItem>
+                              <SelectItem value="12:00 - 1:00 PM">12:00 - 1:00 PM</SelectItem>
+                              <SelectItem value="1:00 - 2:00 PM">1:00 - 2:00 PM</SelectItem>
+                              <SelectItem value="2:00 - 3:00 PM">2:00 - 3:00 PM</SelectItem>
+                              <SelectItem value="3:00 - 4:00 PM">3:00 - 4:00 PM</SelectItem>
+                              <SelectItem value="4:00 - 5:00 PM">4:00 - 5:00 PM</SelectItem>
+                              <SelectItem value="5:00 - 6:00 PM">5:00 - 6:00 PM</SelectItem>
+                              <SelectItem value="6:00 - 7:00 PM">6:00 - 7:00 PM</SelectItem>
+                              <SelectItem value="7:00 - 8:00 PM">7:00 - 8:00 PM</SelectItem>
+                              <SelectItem value="8:00 - 9:00 PM">8:00 - 9:00 PM</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -256,11 +266,21 @@ export default function StudentDashboard() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {TIME_OPTIONS.map(time => (
-                                <SelectItem key={time} value={time}>
-                                  {time}
-                                </SelectItem>
-                              ))}
+                              <SelectItem value="6:00 - 7:00 AM">6:00 - 7:00 AM</SelectItem>
+                              <SelectItem value="7:00 - 8:00 AM">7:00 - 8:00 AM</SelectItem>
+                              <SelectItem value="8:00 - 9:00 AM">8:00 - 9:00 AM</SelectItem>
+                              <SelectItem value="9:00 - 10:00 AM">9:00 - 10:00 AM</SelectItem>
+                              <SelectItem value="10:00 - 11:00 AM">10:00 - 11:00 AM</SelectItem>
+                              <SelectItem value="11:00 - 12:00 PM">11:00 - 12:00 PM</SelectItem>
+                              <SelectItem value="12:00 - 1:00 PM">12:00 - 1:00 PM</SelectItem>
+                              <SelectItem value="1:00 - 2:00 PM">1:00 - 2:00 PM</SelectItem>
+                              <SelectItem value="2:00 - 3:00 PM">2:00 - 3:00 PM</SelectItem>
+                              <SelectItem value="3:00 - 4:00 PM">3:00 - 4:00 PM</SelectItem>
+                              <SelectItem value="4:00 - 5:00 PM">4:00 - 5:00 PM</SelectItem>
+                              <SelectItem value="5:00 - 6:00 PM">5:00 - 6:00 PM</SelectItem>
+                              <SelectItem value="6:00 - 7:00 PM">6:00 - 7:00 PM</SelectItem>
+                              <SelectItem value="7:00 - 8:00 PM">7:00 - 8:00 PM</SelectItem>
+                              <SelectItem value="8:00 - 9:00 PM">8:00 - 9:00 PM</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />

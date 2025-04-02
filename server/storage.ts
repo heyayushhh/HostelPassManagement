@@ -154,8 +154,8 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(passes)
-      .where(and(eq(passes.status, statusValue), eq(passes.date, date)))
-      .orderBy(passes.timeSlot); // Order by time slot
+      .where(and(eq(passes.status, statusValue), eq(passes.outDate, date)))
+      .orderBy(passes.outTime); // Order by time
   }
   
   async updatePassStatus(

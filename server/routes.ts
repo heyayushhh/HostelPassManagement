@@ -318,6 +318,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file was uploaded" });
       }
       
+      // Make sure the uploads directory exists
+      const uploadsDir = path.join(__dirname, '../uploads');
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+      
       const user = req.user as any;
       const profilePhoto = req.files.profilePhoto as UploadedFile;
       
@@ -334,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create a unique filename
       const filename = `${user.id}-${Date.now()}${path.extname(profilePhoto.name)}`;
-      const uploadPath = path.join(__dirname, '../uploads', filename);
+      const uploadPath = path.join(uploadsDir, filename);
       
       // Move the file to the uploads directory
       await profilePhoto.mv(uploadPath);
@@ -347,6 +353,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ user: userWithoutPassword });
     } catch (error) {
+      console.error("Profile photo upload error:", error);
       res.status(500).json({ message: "Error uploading profile photo" });
     }
   });

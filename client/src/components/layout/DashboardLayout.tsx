@@ -60,19 +60,24 @@ export default function DashboardLayout({ children, title, icon }: DashboardLayo
             </div>
             
             <div className="ml-4 relative">
-              <div className="flex items-center space-x-1 cursor-pointer group">
-                <span className="text-sm font-medium">{user?.name}</span>
-                <ChevronDown className="h-4 w-4" />
-                
-                <div className="absolute hidden group-hover:block right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                  <button
-                    onClick={() => logout()}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </button>
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center">
+                  <div className="bg-primary-dark rounded-full h-8 w-8 flex items-center justify-center text-white text-sm font-medium">
+                    {user?.name?.split(" ").map(n => n[0]).join("").toUpperCase()}
+                  </div>
+                  <div className="ml-2">
+                    <span className="text-sm font-medium">{user?.name}</span>
+                    <p className="text-xs text-white/80">{user?.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : ''}</p>
+                  </div>
                 </div>
+                
+                <button
+                  onClick={() => logout()}
+                  className="flex items-center bg-primary-dark hover:bg-primary-darker px-3 py-1.5 rounded-md transition-colors"
+                >
+                  <LogOut className="h-4 w-4 mr-1" />
+                  <span className="text-sm">Logout</span>
+                </button>
               </div>
             </div>
           </div>

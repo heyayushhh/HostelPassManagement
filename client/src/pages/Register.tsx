@@ -69,32 +69,32 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen py-8 flex items-center justify-center bg-gray-100">
-      <Card className="max-w-md w-full">
-        <div className="bg-primary text-white px-6 py-4">
+    <div className="min-h-screen py-8 flex items-center justify-center bg-gradient-to-b from-primary-light/20 to-gray-100">
+      <Card className="max-w-md w-full shadow-lg border-0">
+        <div className="bg-primary text-white px-6 py-5 rounded-t-lg">
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-medium">Campus Gate Pass System</h1>
+            <h1 className="text-xl font-medium bg-gradient-to-r from-white to-gray-200 text-transparent bg-clip-text">Campus Gate Pass System</h1>
             <Link href="/">
-              <a className="text-sm cursor-pointer hover:underline">Login</a>
+              <a className="text-sm bg-white/20 hover:bg-white/30 transition-colors px-3 py-1 rounded-md">Login Instead</a>
             </Link>
           </div>
         </div>
 
-        <CardContent className="p-6">
-          <div className="flex items-center mb-4">
+        <CardContent className="p-8">
+          <div className="flex items-center mb-6">
             <Button
               variant="ghost"
               size="sm"
-              className="p-0 mr-2"
+              className="p-0 mr-2 text-primary"
               onClick={() => navigate("/")}
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <h2 className="text-lg font-medium text-gray-800">Create new account</h2>
+            <h2 className="text-xl font-medium text-gray-800">Student Registration</h2>
           </div>
 
           {error && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert variant="destructive" className="mb-6">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
@@ -176,7 +176,13 @@ export default function Register() {
                     <FormItem>
                       <FormLabel>Room No.</FormLabel>
                       <FormControl>
-                        <Input placeholder="Room number" {...field} />
+                        <Input 
+                          placeholder="Room number" 
+                          name={field.name}
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -190,7 +196,13 @@ export default function Register() {
                     <FormItem>
                       <FormLabel>Batch</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. 2022-26" {...field} />
+                        <Input 
+                          placeholder="e.g. 2022-26" 
+                          name={field.name}
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -205,7 +217,13 @@ export default function Register() {
                   <FormItem>
                     <FormLabel>Course</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your course" {...field} />
+                      <Input 
+                        placeholder="Your course" 
+                        name={field.name}
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -220,7 +238,13 @@ export default function Register() {
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="Your phone number" {...field} />
+                        <Input 
+                          placeholder="Your phone number" 
+                          name={field.name}
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -234,7 +258,13 @@ export default function Register() {
                     <FormItem>
                       <FormLabel>Parent's Phone</FormLabel>
                       <FormControl>
-                        <Input placeholder="Parent's phone number" {...field} />
+                        <Input 
+                          placeholder="Parent's phone number" 
+                          name={field.name}
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -244,16 +274,16 @@ export default function Register() {
 
               <Button
                 type="submit"
-                className="w-full bg-primary text-white"
+                className="w-full bg-primary hover:bg-primary-dark text-white py-6 mt-2 transition-colors font-medium text-base"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Registering...
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Creating your account...
                   </>
                 ) : (
-                  "Register"
+                  "Create Account"
                 )}
               </Button>
 

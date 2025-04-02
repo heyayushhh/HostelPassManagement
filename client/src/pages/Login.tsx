@@ -47,22 +47,22 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <Card className="max-w-md w-full">
-        <div className="bg-primary text-white px-6 py-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary-light/20 to-gray-100">
+      <Card className="max-w-md w-full shadow-lg border-0">
+        <div className="bg-primary text-white px-6 py-5 rounded-t-lg">
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-medium">Campus Gate Pass System</h1>
+            <h1 className="text-xl font-medium bg-gradient-to-r from-white to-gray-200 text-transparent bg-clip-text">Campus Gate Pass System</h1>
             <Link href="/register">
-              <a className="text-sm cursor-pointer hover:underline">Register</a>
+              <a className="text-sm bg-white/20 hover:bg-white/30 transition-colors px-3 py-1 rounded-md">Register Now</a>
             </Link>
           </div>
         </div>
         
-        <CardContent className="p-6">
-          <h2 className="text-lg font-medium text-gray-800 mb-4">Login to your account</h2>
+        <CardContent className="p-8">
+          <h2 className="text-xl font-medium text-gray-800 mb-6">Welcome Back</h2>
           
           {error && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert variant="destructive" className="mb-6">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
@@ -71,42 +71,42 @@ export default function Login() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="mb-5">
-                <FormLabel className="block text-sm font-medium text-gray-700 mb-1">User Type</FormLabel>
-                <div className="flex rounded-md shadow-sm">
+                <FormLabel className="block text-sm font-medium text-gray-700 mb-2">Login As</FormLabel>
+                <div className="flex rounded-md shadow-md">
                   <Button
                     type="button"
                     onClick={() => handleRoleChange('student')}
-                    className={`flex-1 rounded-l ${
+                    className={`flex-1 rounded-l-md py-3 transition-all duration-200 ${
                       selectedRole === 'student' 
-                        ? 'bg-primary text-white' 
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        ? 'bg-primary text-white shadow-inner' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    <School className="h-4 w-4 mr-2" />
+                    <School className="h-5 w-5 mr-2" />
                     Student
                   </Button>
                   <Button
                     type="button"
                     onClick={() => handleRoleChange('warden')}
-                    className={`flex-1 ${
+                    className={`flex-1 border-x border-gray-200 py-3 transition-all duration-200 ${
                       selectedRole === 'warden' 
-                        ? 'bg-primary text-white' 
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        ? 'bg-primary text-white shadow-inner' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    <User className="h-4 w-4 mr-2" />
+                    <User className="h-5 w-5 mr-2" />
                     Warden
                   </Button>
                   <Button
                     type="button"
                     onClick={() => handleRoleChange('guard')}
-                    className={`flex-1 rounded-r ${
+                    className={`flex-1 rounded-r-md py-3 transition-all duration-200 ${
                       selectedRole === 'guard' 
-                        ? 'bg-primary text-white' 
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        ? 'bg-primary text-white shadow-inner' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    <Shield className="h-4 w-4 mr-2" />
+                    <Shield className="h-5 w-5 mr-2" />
                     Guard
                   </Button>
                 </div>
@@ -142,16 +142,16 @@ export default function Login() {
               
               <Button 
                 type="submit" 
-                className="w-full bg-primary text-white" 
+                className="w-full bg-primary hover:bg-primary-dark text-white py-6 mt-2 transition-colors font-medium text-base"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Logging in...
                   </>
                 ) : (
-                  "Login"
+                  "Sign In"
                 )}
               </Button>
               

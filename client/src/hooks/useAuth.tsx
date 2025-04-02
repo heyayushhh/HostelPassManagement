@@ -22,36 +22,101 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [, navigate] = useLocation();
 
   // Get current user
-  const { isLoading } = useQuery({
+  const { isLoading, data: userData } = useQuery({
     queryKey: ["/api/auth/user"],
-    queryFn: getUser
+    queryFn: getUser,
+    onSuccess: (data) => {
+      if (data && data.user) {
+        setUser(data.user);
+        // Redirect based on user role after getting user data
+        if (data.user.role === 'student') {
+          navigate('/student/dashboard');
+        } else if (data.user.role === 'warden') {
+          navigate('/warden/dashboard');
+        } else if (data.user.role === 'guard') {
+          navigate('/guard/dashboard');
+        }
+      }
+    },
+    onError: () => {
+      setUser(null);
+    }
   });
+
+  // Initialize user from query data
+  React.useEffect(() => {
+    if (userData && userData.user) {
+      setUser(userData.user);
+    }
+  }, [userData]);
 
   // Login mutation
   const loginMutation = useMutation({
-    mutationFn: login
+    mutationFn: login,
+    onSuccess: (data) => {
+      if (data && data.user) {
+        setUser(data.user);
+        // Redirect based on user role
+        if (data.user.role === 'student') {
+          navigate('/student/dashboard');
+        } else if (data.user.role === 'warden') {
+          navigate('/warden/dashboard');
+        } else if (data.user.role === 'guard') {
+          navigate('/guard/dashboard');
+        }
+      }
+    },
+    onError: (error: any) => {
+      setError(error.message || 'Login failed');
+    }
   });
 
   // Register mutation
   const registerMutation = useMutation({
-    mutationFn: register
+    mutationFn: register,
+    onSuccess: () => {
+      navigate('/'); // Redirect to login page after registration
+    },
+    onError: (error: any) => {
+      setError(error.message || 'Registration failed');
+    }
   });
 
   // Logout mutation
   const logoutMutation = useMutation({
-    mutationFn: logout
+    mutationFn: logout,
+    onSuccess: () => {
+      setUser(null);
+      navigate('/');
+      // Invalidate queries to reset state
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    }
   });
 
   const handleLogin = async (data: LoginData) => {
-    await loginMutation.mutateAsync(data);
+    setError(null);
+    try {
+      await loginMutation.mutateAsync(data);
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+    }
   };
 
   const handleRegister = async (data: InsertUser) => {
-    await registerMutation.mutateAsync(data);
+    setError(null);
+    try {
+      await registerMutation.mutateAsync(data);
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
+    }
   };
 
   const handleLogout = async () => {
-    await logoutMutation.mutateAsync();
+    try {
+      await logoutMutation.mutateAsync();
+    } catch (err: any) {
+      console.error('Logout failed:', err);
+    }
   };
 
   const contextValue = {

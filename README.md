@@ -18,6 +18,8 @@ A modern web application for managing student gate passes in educational institu
 - **Database**: PostgreSQL with Drizzle ORM
 - **Authentication**: Session-based auth with Express-session
 
+#OUTLOOK LINK (VIDEO+REPORT):https://krmangalameduin-my.sharepoint.com/:f:/g/personal/2301730125_krmu_edu_in/Ei76C39fiOdIhJ2FTdNu-oQBZ3VP532W8xHl2khg2RujEQ?e=HQPLGm
+
 ## Quick Start
 
 1. Clone the repository
